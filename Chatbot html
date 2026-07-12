@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Health Doctor - Health Hub Hindi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🌿 Health Hub Hindi</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="calculator.html">BMI Calculator</a>
+            <a href="chatbot.html">AI Doctor</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>🤖 AI Health Doctor - 24x7</h2>
+            <p>Apna sawal hindi me puche. Ex: "Sir dard ka ilaaj batao"</p>
+            <div id="chatbox"></div>
+            <input type="text" id="userInput" placeholder="Apna sawal yahan likhe..." onkeypress="if(event.key==='Enter') askAI()">
+            <button onclick="askAI()">Bheje</button>
+            <p style="font-size:12px; color:red;">Note: Ye AI hai. Emergency me doctor se mile.</p>
+        </div>
+    </div>
+    <footer><p>© 2026 Health Hub Hindi</p></footer>
+
+<script>
+const API_KEY = "YAHAN_APNI_GOOGLE_AI_API_KEY_PASTE_KARE"; // <-- IMPORTANT
+
+async function askAI(){
+    let question = document.getElementById('userInput').value;
+    if(!question) return;
+    document.getElementById('chatbox').innerHTML += `<p class="user"><b>Aap:</b> ${question}</p>`;
+    document.getElementById('userInput').value = "";
+    document.getElementById('chatbox').innerHTML += `<p class="ai" id="loading"><b>AI Doctor:</b> Jawab likh raha hu...</p>`;
+
+    let chatbox = document.getElementById('chatbox');
+    chatbox.scrollTop = chatbox.scrollHeight;
+
+    try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                contents: [{parts: [{text: "Tum hindi health expert ho. 4 line me gharelu nuskha do. Safe jawab do. Ant me likho: Doctor se salah le. Sawal: " + question}]}]
+            })
+        });
+        const data = await res.json();
+        let answer = data.candidates[0].content.parts[0].text;
+        document.getElementById('loading').innerHTML = `<b>AI Doctor:</b> ${answer}`;
+    } catch(e) {
+        document.getElementById('loading').innerHTML = `<b style="color:red;">Error: API Key galat hai</b>`;
+    }
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+</script>
+</body>
+</html>
